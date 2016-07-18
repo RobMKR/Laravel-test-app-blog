@@ -49,14 +49,10 @@
                 <!-- Right Side Of Navbar -->
                 <ul class="nav navbar-nav navbar-right">
                     <!-- Authentication Links -->
-                    @if (Auth::guest())
-                        <li><a href="{{ url('/login') }}">Login</a></li>
-                        <li><a href="{{ url('/register') }}">Register</a></li>
-                    @else
-                        @if (Auth::user()->isAdmin())
-                            <li><a href="{{ url('/') }}">Home</a></li>
-                        @endif
-                        <li><a href="posts/new">New Post</a></li>
+                    @if (Auth::user()->isAdmin())
+                        <li><a href="{{ url('/') }}">Home</a></li>
+                        <li><a href="{{url('/admin/new-category')}}">New Category</a></li>
+                        <li><a href="{{url('/admin/new-picture')}}">New Picture</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {{ Auth::user()->name }} <span class="caret"></span>

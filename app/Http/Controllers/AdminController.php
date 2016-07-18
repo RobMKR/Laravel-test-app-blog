@@ -6,73 +6,49 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\User;
+use App\Category;
 use Validator;
 use App;
 use App\Http\Controllers\Controller;
+use DB;
 
 
 class AdminController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('admin');
-    }
-
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'title' => 'required|max:255',
-            'content' => 'required',
-            'image_url' =>'mimes:jpeg,bmp,png'
-        ]);
+        $this->middleware('auth');
     }
 
     public function index(){
-      $posts = App\Post::all()->reverse();
-      return view('admin.home', ['posts' => $posts]);
+
+      $categories = DB::table('categories')->get();
+      return view('admin.home', ['categories' => $categories]);
     }
 
-    public function removePost($id){
-      if(App\Post::destroy($id)){
-          return redirect('admin')->with('status', 'You have successfully removed post.');
+    public function newCategory(){
+      return view('admin.newCategory');
+    }
+
+    public function saveNewCategory(Request $request){
+      $validator = Validator::make($request->all(), [
+        'title' => 'required'
+      ]);
+      if($validator->fails()){
+        return redirect('/admin/new-category')->withInput()->withErrors($validator);
       }
+      $Category = new Category();
+      $Category->saveCategory($request->all());
 
-      abort('500');
+      return redirect('/admin');
 
     }
 
-    public function getEditPost($id){
-      $post = App\Post::find($id);
-      return view('admin.edit', ['post' => $post]);
+    public function newPicture(){
+      return view('admin.newPicture');
     }
 
-    public function postEditPost($id , Request $request){
-       $validator = $this->validator($request->all());
+    public function saveNewPicture(){
 
-        if ($validator->fails()){
-            return redirect('admin/edit/'.$id)->withErrors($validator);
-        } else {
-            $post = App\Post::find($id);
-            $post->title = $request->input('title');
-            $post->content = $request->input('content');
-            $post->user_id = $request->user()->id;
-
-            if(!empty($request->file('image_url'))){
-              unlink($post->image_url);
-              $ext = $request->file('image_url')->getClientOriginalExtension();
-              $filename =$request->input('title').'_'.time().'.'.$ext;
-              $destination = "uploads/";
-              // $request->file('image_url')->move($destination);
-              $request->file('image_url')->move($destination, $filename);
-              $post->image_url = $destination.$filename;
-
-            }
-
-            if ($post->save()){
-                return redirect('admin/edit/'.$id)->with('status','Successfully Edited');
-            } else {
-                abort(500);
-            }
-        }
     }
 }

@@ -9,13 +9,6 @@
 | It's a breeze. Simply tell Laravel the URIs it should respond to
 | and give it the controller to call when that URI is requested.
 |
-*/
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
-/*
 |--------------------------------------------------------------------------
 | Application Routes
 |--------------------------------------------------------------------------
@@ -34,7 +27,9 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('/admin/remove/{id}', 'AdminController@removePost');
     Route::get('/admin/edit/{id}', 'AdminController@getEditPost');
     Route::post('/admin/edit/{id}', 'AdminController@postEditPost');
-    Route::get('/', 'PostController@index');
-    Route::get('/posts/new', 'PostController@getNewPost');
-    Route::post('/posts/new', 'PostController@postNewPost');
+    Route::get('/admin/new-category', 'AdminController@newCategory');
+    Route::post('/admin/new-category', 'AdminController@saveNewCategory');
+    Route::get('/admin/new-picture', 'AdminController@newPicture');
+    Route::post('/admin/new-picture', 'AdminController@saveNewPicture');
+    Route::get('/', 'HomeController@index');
 });
